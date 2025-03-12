@@ -21,7 +21,6 @@ namespace Infrastructure.Context
                 builder.
                     ToTable("Users", "Identity")
                     .IsMultiTenant();
-
             }
         }
         internal class ApplicationRoleConfig : IEntityTypeConfiguration<ApplicationRole>
