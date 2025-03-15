@@ -6,7 +6,7 @@ namespace WebAPI
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +18,7 @@ namespace WebAPI
             builder.Services.AddSwaggerGen();
             builder.Services.AddInfrastructureServices(builder.Configuration);
             var app = builder.Build();
+            await app.Services.AddDatabaseInitializer();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
