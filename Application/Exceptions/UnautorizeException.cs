@@ -9,7 +9,7 @@ namespace Application.Exceptions
         public List<string> ErrorMessages { get; set; }
         public HttpStatusCode StatusCode { get; set; }
 
-        public UnautorizeException(HttpStatusCode statusCode = HttpStatusCode.Unauthorized, List<string> errorMessages = default)
+        public UnautorizeException(List<string> errorMessages = default, HttpStatusCode statusCode = HttpStatusCode.Unauthorized)
         {
             StatusCode = statusCode;
             ErrorMessages = errorMessages;
