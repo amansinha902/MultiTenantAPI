@@ -1,6 +1,7 @@
 
+using Application;
 using Infrastructure;
-using System.Globalization;
+using Microsoft.AspNetCore.Components.Web;
 
 namespace WebAPI
 {
@@ -13,12 +14,12 @@ namespace WebAPI
             // Add services to the container.
 
             builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-            //builder.Services.AddEndpointsApiExplorer();
-            //builder.Services.AddSwaggerGen();
+
             builder.Services.AddInfrastructureServices(builder.Configuration);
-            builder.Services.GetJwtSettings(builder.Configuration);
+
             builder.Services.AddJwtAuthentication(builder.Services.GetJwtSettings(builder.Configuration));
+
+            builder.Services.AddApplicationServices();
             var app = builder.Build();
             await app.Services.AddDatabaseInitializer();
 
@@ -33,7 +34,7 @@ namespace WebAPI
 
             //app.UseAuthorization();
             app.UseInfrastructure();
-
+            app.UseMiddleware<ErrorHandlingMiddleware>();
             app.MapControllers();
 
             app.Run();

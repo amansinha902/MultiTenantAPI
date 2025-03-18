@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Infrastructure.OpenAPI
 {
-    public class TenantheaderAttribute() 
+    public class TenantHeaderAttribute() 
         : SwaggerHeaderAttribute(
             headerName: TenancyConstans.TenantIdName, 
            description: "Enter your Tenant Name",

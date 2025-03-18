@@ -6,8 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Infrastructure.OpenAPI
 {
@@ -15,22 +13,25 @@ namespace Infrastructure.OpenAPI
     {
         public bool Process(OperationProcessorContext context)
         {
-            if(context.MethodInfo.GetCustomAttributes(typeof(SwaggerHeaderAttribute)) is SwaggerHeaderAttribute swaggerHeader)
+            var swaggerHeader = context.MethodInfo.GetCustomAttribute<SwaggerHeaderAttribute>();
+
+            if (swaggerHeader != null)
             {
                 var parameters = context.OperationDescription.Operation.Parameters;
-                var existingParam = parameters.
-                    FirstOrDefault(p => p.Name == swaggerHeader.HeaderName &&  p.Kind == OpenApiParameterKind.Header);
+                var existingParam = parameters
+                    .FirstOrDefault(p => p.Kind == OpenApiParameterKind.Header && p.Name == swaggerHeader.HeaderName);
+
                 if (existingParam != null)
                 {
                     parameters.Remove(existingParam);
                 }
+
                 parameters.Add(new OpenApiParameter
                 {
                     Name = swaggerHeader.HeaderName,
                     Kind = OpenApiParameterKind.Header,
                     Description = swaggerHeader.Description,
-                    IsRequired = swaggerHeader.IsRequired,
-                    Default = swaggerHeader.DefaultValue,
+                    IsRequired = true,
                     Schema = new JsonSchema
                     {
                         Type = JsonObjectType.String,
@@ -38,6 +39,7 @@ namespace Infrastructure.OpenAPI
                     }
                 });
             }
+
             return true;
         }
     }

@@ -42,7 +42,7 @@ namespace Infrastructure.Identity.Token
             {
                 throw new UnautorizeException(["Invalid username or password"]);
             }
-            if(await _userManager.CheckPasswordAsync(userInDb, request.Password))
+            if(!await _userManager.CheckPasswordAsync(userInDb, request.Password))
             {
                 throw new UnautorizeException(["Invalid username or password"]);
             }

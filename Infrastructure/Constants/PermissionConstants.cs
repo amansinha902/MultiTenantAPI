@@ -8,6 +8,7 @@ namespace Infrastructure.Constants
         public const string Create = nameof(Create);
         public const string Update = nameof(Update);
         public const string Delete = nameof(Delete);
+        public const string RefreshToken = nameof(RefreshToken);
         public const string UpgradeSubscription = nameof(UpgradeSubscription);
     }
     public static class SchoolFeature
@@ -18,6 +19,7 @@ namespace Infrastructure.Constants
         public const string UserRoles = nameof(UserRoles);
         public const string RoleClaims = nameof(RoleClaims);
         public const string Schools = nameof(Schools);
+        public const string Tokens = nameof(Tokens);
     }
     public record SchoolPermission(string Action, string Feature, string Description, string Group ,bool IsBasic = false, bool IsRoot = false)
     {
@@ -53,6 +55,7 @@ namespace Infrastructure.Constants
                   new SchoolPermission(SchoolConstants.Create, SchoolFeature.Schools, "Create Schools","Academics"),
                   new SchoolPermission(SchoolConstants.Update, SchoolFeature.Schools, "Update Schools","Academics"),
                   new SchoolPermission(SchoolConstants.Delete, SchoolFeature.Schools, "Delete Schools","Academics"),
+                  new SchoolPermission(SchoolConstants.RefreshToken, SchoolFeature.Tokens, "Generate Refresh Token", "SystemAccess",IsBasic:true),
               ];
         public static IReadOnlyList<SchoolPermission> All { get; } =
             new ReadOnlyCollection<SchoolPermission>(_allPermissions);
