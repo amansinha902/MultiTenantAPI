@@ -6,6 +6,7 @@ using Infrastructure.Constants;
 using Infrastructure.Context;
 using Infrastructure.Identity.Auth;
 using Infrastructure.Identity.Models;
+using Infrastructure.OpenAPI;
 using Infrastructure.Tenancy;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -17,10 +18,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
+using NSwag.Generation.Processors.Security;
+using NSwag;
 using System.Net;
 using System.Reflection;
 using System.Security.Claims;
 using System.Text;
+using Infrastructure.Identity.Token;
 
 namespace Infrastructure
 {
@@ -39,7 +43,8 @@ namespace Infrastructure
                 .AddTransient<ITenantDbSeeder,TenantDbSeeder>()
                 .AddTransient<ApplicationDbSeeder>()
                 .AddIdentityService()
-                .AddPermissions();
+                .AddPermissions()
+                .AddOpenApiDocumentation(config);
         }
         public static async Task AddDatabaseInitializer(this IServiceProvider serviceProvider, CancellationToken cancellationToken = default)
         {
@@ -58,7 +63,7 @@ namespace Infrastructure
                 options.Password.RequireUppercase = false;
                 options.User.RequireUniqueEmail = true;
             }).AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders().Services
-            .AddScoped<ITokenService, ITokenService>();
+            .AddScoped<ITokenService, TokenService>();
 
         }
 
@@ -149,10 +154,67 @@ namespace Infrastructure
             });
             return services;
         }
+        internal static IServiceCollection AddOpenApiDocumentation(this IServiceCollection services, IConfiguration config)
+        {
+            var swaggerSettings = config.GetSection(nameof(SwaggerSettings)).Get<SwaggerSettings>();
+
+            services.AddEndpointsApiExplorer();
+            _ = services.AddOpenApiDocument((document, serviceProvider) =>
+            {
+                document.PostProcess = doc =>
+                {
+                    doc.Info.Title = swaggerSettings.Title;
+                    doc.Info.Description = swaggerSettings.Description;
+                    doc.Info.Contact = new OpenApiContact
+                    {
+                        Name = swaggerSettings.ContactName,
+                        Email = swaggerSettings.ContactEmail,
+                        Url = swaggerSettings.ContactUrl
+                    };
+                    doc.Info.License = new OpenApiLicense
+                    {
+                        Name = swaggerSettings.LicenseName,
+                        Url = swaggerSettings.LicenseUrl
+                    };
+                };
+
+                document.AddSecurity(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Description = "Enter your Bearer token to attach it as a header on your requests.",
+                    In = OpenApiSecurityApiKeyLocation.Header,
+                    Type = OpenApiSecuritySchemeType.Http,
+                    Scheme = JwtBearerDefaults.AuthenticationScheme,
+                    BearerFormat = "JWT"
+                });
+
+                document.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor());
+                document.OperationProcessors.Add(new SwaggerGlobalProcesor());
+                document.OperationProcessors.Add(new SwaggerHeaderAttributeProcessor());
+            });
+
+            return services;
+        }
         public static IApplicationBuilder UseInfrastructure(this IApplicationBuilder app)
         {
             return app
-                .UseMultiTenant();
+                .UseAuthentication()
+                .UseMultiTenant()
+                .UseAuthentication()
+                .UseMultiTenant()
+                .UseOpenApiDocumentation();
+        }
+        internal static IApplicationBuilder UseOpenApiDocumentation(this IApplicationBuilder app)
+        {
+            app.UseOpenApi();
+            app.UseSwaggerUi(options =>
+            {
+                options.DefaultModelExpandDepth = -1;
+                options.DocExpansion = "none";
+                options.TagsSorter = "alpha";
+            });
+
+            return app;
         }
     }
 }
