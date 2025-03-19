@@ -25,6 +25,7 @@ using System.Reflection;
 using System.Security.Claims;
 using System.Text;
 using Infrastructure.Identity.Token;
+using Application.Features.Tenancy;
 
 namespace Infrastructure
 {
@@ -42,6 +43,7 @@ namespace Infrastructure
                 .AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(config.GetConnectionString("DefaultConnection")))
                 .AddTransient<ITenantDbSeeder,TenantDbSeeder>()
                 .AddTransient<ApplicationDbSeeder>()
+                .AddTransient<ITenantService,TenantService>()
                 .AddIdentityService()
                 .AddPermissions()
                 .AddOpenApiDocumentation(config);

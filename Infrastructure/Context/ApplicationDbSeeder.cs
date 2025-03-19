@@ -88,8 +88,8 @@ namespace Infrastructure.Context
                 {
                     UserName = _tenantInfoContextAccessor.MultiTenantContext.TenantInfo.Email,
                     Email = _tenantInfoContextAccessor.MultiTenantContext.TenantInfo.Email,
-                    FisrtName = TenancyConstans.FirstNamr,
-                    LastName = TenancyConstans.LastName,
+                    FisrtName = _tenantInfoContextAccessor.MultiTenantContext.TenantInfo.FirstName,
+                    LastName = _tenantInfoContextAccessor.MultiTenantContext.TenantInfo.LastName,
                     EmailConfirmed = true,
                     NormalizedUserName = _tenantInfoContextAccessor.MultiTenantContext.TenantInfo.Email.ToUpper(),
                     NormalizedEmail = _tenantInfoContextAccessor.MultiTenantContext.TenantInfo.Email.ToUpper(),

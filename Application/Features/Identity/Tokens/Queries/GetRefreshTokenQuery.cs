@@ -25,7 +25,7 @@ namespace Application.Features.Identity.Tokens.Queries
         public async Task<IResponseWrapper> Handle(GetRefreshTokenQuery request, CancellationToken cancellationToken)
         {
             var refreshToken = await _tokenService.RefreshTokenAsync(request.RefreshToken);
-            return await ResposeWrapper<TokenResponse>.SuccessAsync(refreshToken);
+            return await ResponseWrapper<TokenResponse>.SuccessAsync(refreshToken);
         }
     }   
 }
