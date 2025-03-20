@@ -26,6 +26,8 @@ using System.Security.Claims;
 using System.Text;
 using Infrastructure.Identity.Token;
 using Application.Features.Tenancy;
+using Application.Features.Schools;
+using Infrastructure.Schools;
 
 namespace Infrastructure
 {
@@ -44,6 +46,7 @@ namespace Infrastructure
                 .AddTransient<ITenantDbSeeder,TenantDbSeeder>()
                 .AddTransient<ApplicationDbSeeder>()
                 .AddTransient<ITenantService,TenantService>()
+                .AddTransient<ISchoolService,SchoolService>()
                 .AddIdentityService()
                 .AddPermissions()
                 .AddOpenApiDocumentation(config);

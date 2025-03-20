@@ -1,12 +1,8 @@
-﻿using FluentValidation;
+﻿using Application.Pipelines;
+using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application
 {
@@ -18,6 +14,7 @@ namespace Application
 
             return services
                 .AddValidatorsFromAssembly(assembly)
+                .AddTransient(typeof(IPipelineBehavior<,>),typeof(ValidationPipelineBehavior<,>))
                // .AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBenaviour<,>))
                 .AddMediatR(cfg =>
                 {
